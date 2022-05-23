@@ -47,10 +47,6 @@ missForest:
   model_settings:
     dummy: None
 
-gain:
-  model_settings:
-    dummy: None
-
 gb:
   model_settings:
     verbose: 2
