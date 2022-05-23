@@ -31,18 +31,8 @@ results = pd.DataFrame()
 for file in results_files:
     results = results.append(pd.read_pickle(file))
 
-# ---- remove m1 results
-results = results.loc[results['model'] != 'm1']
-
 # ---- remove m column
 results = results.drop('m', 1)
-
-# ---- update naming
-results['model'] = results['model'].replace({'m2': 'supMIWAE',
-                                             'm3': 'MIWAE',
-                                             'mice': 'MICE',
-                                             'ppca-em': 'PPCA',
-                                             'gb': 'GB'})
 
 # ---- change model order
 order = ['supMIWAE', 'MIWAE', '0-impute', 'learnable-imputation', 'MICE', 'missForest', 'PPCA', 'GB', 'permutation-invariance',]

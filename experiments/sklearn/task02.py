@@ -776,42 +776,39 @@ if __name__ == '__main__':
     }
 
     imputer_map = {
-        'm1': SimpleImputer(strategy='constant', fill_value=0),
-        'm2': SimpleImputer(strategy='constant', fill_value=0),
-        'm3': SimpleImputer(strategy='constant', fill_value=0),
+        'supMIWAE': SimpleImputer(strategy='constant', fill_value=0),
+        'MIWAE': SimpleImputer(strategy='constant', fill_value=0),
         '0-impute': SimpleImputer(strategy='constant', fill_value=0),
         'learnable-imputation': SimpleImputer(strategy='constant', fill_value=0),
         'permutation-invariance': SimpleImputer(strategy='constant', fill_value=0),
-        'ppca-em': PPCA(),
-        'mice': IterativeImputer(estimator=BayesianRidge(), max_iter=100, sample_posterior=False, random_state=0),
+        'PPCA': PPCA(),
+        'MICE': IterativeImputer(estimator=BayesianRidge(), max_iter=100, sample_posterior=False, random_state=0),
         'missForest': IterativeImputer(estimator=RandomForestRegressor(n_estimators=100), max_iter=100, random_state=0),
-        'gb': SimpleImputer(strategy='constant', fill_value=0),
+        'GB': SimpleImputer(strategy='constant', fill_value=0),
     }
 
     model_map = {
-        'm1': MLPMIWAE,
-        'm2': MLPMIWAE,
-        'm3': MLPMIWAE,
+        'supMIWAe': MLPMIWAE,
+        'MIWAE': MLPMIWAE,
         '0-impute': SimpleDiscriminatorModel,
         'learnable-imputation': LearnableImputationModel,
         'permutation-invariance': PermutationInvarianceModel,
-        'ppca-em': SimpleDiscriminatorModel,
-        'mice': SimpleDiscriminatorModel,
+        'PPCA': SimpleDiscriminatorModel,
+        'MICE': SimpleDiscriminatorModel,
         'missForest': SimpleDiscriminatorModel,
-        'gb': HistGradientBoostingClassifier,
+        'GB': HistGradientBoostingClassifier,
     }
 
     estimator_map = {
-        'm1': VariationalInference,
-        'm2': VariationalInference,
-        'm3': MaximumLikelihood,
+        'supMIWAE': VariationalInference,
+        'MIWAE': MaximumLikelihood,
         '0-impute': MaximumLikelihood,
         'learnable-imputation': MaximumLikelihood,
         'permutation-invariance': MaximumLikelihood,
-        'ppca-em': MaximumLikelihood,
-        'mice': MaximumLikelihood,
+        'PPCA': MaximumLikelihood,
+        'MICE': MaximumLikelihood,
         'missForest': MaximumLikelihood,
-        'gb': [],
+        'GB': [],
     }
 
     parser = argparse.ArgumentParser(description='Sklearn dataset examples')

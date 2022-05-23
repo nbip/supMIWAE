@@ -3,19 +3,13 @@ mlp:
     n_hidden: [ 50, 50, 50]
 #    n_hidden: [ 2, 2]
 
-m1:
+supMIWAE:
   model_settings:
     input_shape: 2
     n_hidden: [ 50, 50, 50 ]
     n_latent: 2
 
-m2:
-  model_settings:
-    input_shape: 2
-    n_hidden: [ 50, 50, 50 ]
-    n_latent: 2
-
-m3:
+MIWAE:
   model_settings:
     input_shape: 2
     n_hidden: [ 50, 50, 50 ]
@@ -35,11 +29,11 @@ permutation-invariance:
     embedding_size: 20
     code_size: 10
 
-ppca-em:
+PPCA:
   model_settings:
     dummy: None
 
-mice:
+MICE:
   model_settings:
     dummy: None
 
@@ -47,7 +41,7 @@ missForest:
   model_settings:
     dummy: None
 
-gb:
+GB:
   model_settings:
     verbose: 2
     early_stopping: True
