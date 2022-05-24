@@ -15,7 +15,7 @@ from sklearn.datasets import make_circles, make_moons
 from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestRegressor
 from sklearn.experimental import enable_hist_gradient_boosting, enable_iterative_imputer
 from sklearn.impute import IterativeImputer, SimpleImputer
-from sklearn.linear_model import BayesianRidge, LogisticRegression
+from sklearn.linear_model import BayesianRidge
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import StandardScaler
 
@@ -573,15 +573,15 @@ def main(args):
             Xtest_i = imputer.transform(Xtest_nan)
 
             # ---- model ---- #
-            if args.model != 'gb':
+            if args.model != 'GB':
                 clf = MLPClassifier(**config['mlp']['model_settings'],
                                     **config[args.dataset]['model_settings'])
                 model = model_map[args.model](**config[args.model]['model_settings'], disc=clf)
             else:
                 model = model_map[args.model](**config[args.model]['model_settings'])
 
-            # ---- for M1-M3, pretrain a MIWAE
-            if args.model in ['m1', 'm2', 'm3']:
+            # ---- for MIWAE and supMIWAE, pretrain a MIWAE
+            if args.model in ['MIWAE', 'supMIWAE']:
 
                 # ---- create tf datasets without labels for pretraining
                 train_dataset = utils.get_tf_dataset((Xtrain_i, Strain), **config['training'])
@@ -604,9 +604,8 @@ def main(args):
                 # ---- load the best set of weights
                 model.load_weights(pretrainer.save_dir)
 
-            # ---- M1) train using the full ELBO.
-            # ---- M2) train using the full ELBO, with fixed generator
-            if args.model in ['m1', 'm2']:
+            # ---- supMIWAE) train using the full ELBO, with fixed generator
+            if args.model in ['supMIWAE']:
 
                 # ---- create tf datasets with labels
                 train_dataset = utils.get_tf_dataset((Xtrain_i, Strain, ytrain), **config['training'])
@@ -616,9 +615,9 @@ def main(args):
                 estimator = SupervisedVariationalInference()
                 estimator.init_tensorboard(os.path.join(EXPERIMENT, args.model))
 
-                # in M2, fix the generator, only the classifier can be
+                # in supMIWAE, fix the generator, only the classifier can be
                 # trained, see the model.train_step
-                trainable_parts = ['disc'] if args.model == 'm2' else ['enc', 'dec', 'disc']
+                trainable_parts = ['disc'] if args.model == 'supMIWAE' else ['enc', 'dec', 'disc']
                 estimator.trainable_parts = trainable_parts
 
                 optimizer = tf.keras.optimizers.Adam(1e-4)
@@ -632,8 +631,8 @@ def main(args):
                 # ---- load best set of weights ( use accuracy or p(y|x) ? )
                 model.load_weights(estimator.save_dir)
 
-            # ---- M3) impute using the generative part of the model and train the classifier
-            if args.model == 'm3':
+            # ---- MIWAE) impute using the generative part of the model and train the classifier
+            if args.model == 'MIWAE':
 
                 # ---- impute
                 Xtrain_ii = pretrainer.single_imputation((Xtrain_i, Strain), model, n_samples=10000, pareto=False)
@@ -654,24 +653,24 @@ def main(args):
                 estimator = MaximumLikelihood()
                 estimator.init_tensorboard(os.path.join(EXPERIMENT, args.model))
 
-                m3_model = SimpleDiscriminatorModel(disc=clf)
+                MIWAE_model = SimpleDiscriminatorModel(disc=clf)
 
                 optimizer = tf.keras.optimizers.Adam(1e-4)
-                trainer.train(m3_model,
+                trainer.train(MIWAE_model,
                               estimator,
                               optimizer,
                               train_dataset,
                               val_dataset,
                               **config['training'])
 
-                m3_model.load_weights(estimator.save_dir)
+                MIWAE_model.load_weights(estimator.save_dir)
 
                 # OBS! we are appending the clf classifier to the pretrained MIWAE
                 # to have everything in one place, for plotting purposes
-                model.discriminator = m3_model.discriminator
+                model.discriminator = MIWAE_model.discriminator
 
             # ---- train a plain classifier on imputed data
-            if args.model not in ['m1', 'm2', 'm3', 'gb']:
+            if args.model not in ['MIWAE', 'supMIWAE', 'GB']:
 
                 # ---- create tf datasets with labels
                 train_dataset = utils.get_tf_dataset((Xtrain_i, Strain, ytrain), **config['training'])
@@ -692,7 +691,7 @@ def main(args):
                 model.load_weights(estimator.save_dir)
 
             # ---- train a GB classifier
-            if args.model == 'gb':
+            if args.model == 'GB':
 
                 print(model)
                 model.fit(np.concatenate([Xtrain_nan, Xval_nan], axis=0), np.concatenate([ytrain, yval], axis=0))
@@ -706,8 +705,8 @@ def main(args):
             # ---- plot decision surface
             plot_surface((Xtrain_i, Strain, ytrain), model, os.path.join(ASSETS_DIR, prefix + '_surface'))
 
-            # ---- for m1-m3
-            if args.model in ['m1', 'm2', 'm3']:
+            # ---- for MIWAE, supMIWAE
+            if args.model in ['MIWAE', 'supMIWAE']:
                 plot_classprobs((Xtrain_i, Strain, ytrain), model, os.path.join(ASSETS_DIR, prefix + '_class_probs'))
                 plot_posterior((Xtrain_i, Strain, ytrain), model, os.path.join(ASSETS_DIR, prefix))
                 plot_single((Xtrain_i, Strain, ytrain), model, os.path.join(ASSETS_DIR, prefix + '_single'))
@@ -716,11 +715,11 @@ def main(args):
                 plot_predictive(model, n_latent, os.path.join(ASSETS_DIR, prefix + '_predictive'))
 
             # ---- compute performance
-            if args.model == 'm3':
-                model = m3_model
+            if args.model == 'MIWAE':
+                model = MIWAE_model
                 ytrain_pred, ytrain_probs = estimator.predict((Xtrain_i, np.ones_like(Xtrain_i).astype(np.float32)), model)
                 ytest_pred, ytest_probs = estimator.predict((Xtest_i, np.ones_like(Xtest_i).astype(np.float32)), model)
-            elif args.model == 'gb':
+            elif args.model == 'GB':
                 ytrain_pred = model.predict(Xtrain_nan)
                 ytrain_probs = model.predict_proba(Xtrain_nan)
                 ytest_pred = model.predict(Xtest_nan)
@@ -808,7 +807,7 @@ if __name__ == '__main__':
     }
 
     parser = argparse.ArgumentParser(description='Sklearn dataset examples')
-    parser.add_argument('--model', type=str, default="MIWAE", choices=model_map.keys())
+    parser.add_argument('--model', type=str, default="supMIWAE", choices=model_map.keys())
     parser.add_argument('--dataset', type=str, default="circles", choices=dataset_map.keys())
     parser.add_argument('--gpu', type=str, default="")
     parser.add_argument('--reps', type=int, default=1)
