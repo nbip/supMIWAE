@@ -12,8 +12,8 @@ import pandas as pd
 import tensorflow as tf
 import yaml
 from sklearn.datasets import make_circles, make_moons
-from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestRegressor
 from sklearn.experimental import enable_hist_gradient_boosting, enable_iterative_imputer
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestRegressor
 from sklearn.impute import IterativeImputer, SimpleImputer
 from sklearn.linear_model import BayesianRidge
 from sklearn.model_selection import train_test_split
@@ -783,7 +783,7 @@ if __name__ == '__main__':
     }
 
     model_map = {
-        'supMIWAe': MLPMIWAE,
+        'supMIWAE': MLPMIWAE,
         'MIWAE': MLPMIWAE,
         '0-impute': SimpleDiscriminatorModel,
         'learnable-imputation': LearnableImputationModel,
