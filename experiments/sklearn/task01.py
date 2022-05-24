@@ -43,7 +43,7 @@ import seaborn as sns; sns.set()
 import matplotlib; matplotlib.use('Agg')  # needed when running from commandline
 
 
-EXPERIMENT = 'sklearn/task02'
+EXPERIMENT = 'sklearn/task01'
 RESULTS_DIR = os.path.join('results', EXPERIMENT)
 ASSETS_DIR = os.path.join('assets', EXPERIMENT)
 
@@ -545,7 +545,7 @@ def main(args):
     for random_state_m, m in enumerate([0.5]):
         m_str = str(m).replace('.', '')
         print("M: ", m)
-        prefix = 'task02_{}_{}_{}'.format(args.dataset, args.model, m_str)
+        prefix = 'task01_{}_{}_{}'.format(args.dataset, args.model, m_str)
 
         for rep in range(args.reps):
             print("Rep: {0}/{1}".format(rep + 1, args.reps))
@@ -812,11 +812,11 @@ if __name__ == '__main__':
     }
 
     parser = argparse.ArgumentParser(description='Sklearn dataset examples')
-    parser.add_argument('--model', type=str, default="m1", choices=model_map.keys())
+    parser.add_argument('--model', type=str, default="MIWAE", choices=model_map.keys())
     parser.add_argument('--dataset', type=str, default="circles", choices=dataset_map.keys())
     parser.add_argument('--gpu', type=str, default="")
     parser.add_argument('--reps', type=int, default=1)
-    parser.add_argument('--config', type=str, default="configs/sklearn/task02.yaml")
+    parser.add_argument('--config', type=str, default="configs/sklearn/task01.yaml")
     args = parser.parse_args()
 
     os.environ["CUDA_VISIBLE_DEVICES"] = args.gpu
