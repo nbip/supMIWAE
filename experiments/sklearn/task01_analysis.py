@@ -4,7 +4,6 @@ import os
 
 import numpy as np
 import pandas as pd
-from matplotlib import pyplot as plt
 
 import seaborn as sns; sns.set()
 
@@ -18,9 +17,9 @@ RESULTS_DIR = os.path.join('results', EXPERIMENT)
 ASSETS_DIR = os.path.join('assets', EXPERIMENT)
 
 # dataset = 'circles'
-# dataset = 'half-moons'
+dataset = 'half-moons'
 # dataset = 'pin-wheel'
-dataset = 'burger'
+# dataset = 'burger'
 
 os.makedirs(ASSETS_DIR, exist_ok=True)
 current_time = datetime.datetime.now().strftime("%Y%m%d-%H%M%S")

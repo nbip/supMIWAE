@@ -11,13 +11,9 @@ import numpy as np
 import pandas as pd
 import tensorflow as tf
 import yaml
+from sklearn.datasets import make_circles, make_moons
+from sklearn.ensemble import HistGradientBoostingClassifier, RandomForestRegressor
 from sklearn.experimental import enable_hist_gradient_boosting, enable_iterative_imputer
-from sklearn.datasets import make_circles, make_classification, make_moons
-from sklearn.ensemble import (
-    GradientBoostingClassifier,
-    HistGradientBoostingClassifier,
-    RandomForestRegressor,
-)
 from sklearn.impute import IterativeImputer, SimpleImputer
 from sklearn.linear_model import BayesianRidge, LogisticRegression
 from sklearn.model_selection import train_test_split
