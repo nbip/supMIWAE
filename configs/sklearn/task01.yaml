@@ -1,0 +1,96 @@
+mlp:
+  model_settings:
+    n_hidden: [ 50, 50, 50]
+#    n_hidden: [ 2, 2]
+
+supMIWAE:
+  model_settings:
+    input_shape: 2
+    n_hidden: [ 50, 50, 50 ]
+    n_latent: 2
+
+MIWAE:
+  model_settings:
+    input_shape: 2
+    n_hidden: [ 50, 50, 50 ]
+    n_latent: 2
+
+0-impute:
+  model_settings:
+    dummy: None
+
+learnable-imputation:
+  model_settings:
+    input_shape: 2
+
+permutation-invariance:
+  model_settings:
+    input_shape: 2
+    embedding_size: 20
+    code_size: 10
+
+PPCA:
+  model_settings:
+    dummy: None
+
+MICE:
+  model_settings:
+    dummy: None
+
+missForest:
+  model_settings:
+    dummy: None
+
+GB:
+  model_settings:
+    verbose: 2
+    early_stopping: True
+    n_iter_no_change: 10
+    max_iter: 1000
+
+# ---- datasets
+circles:
+  data_settings:
+    n_samples: 5000
+    noise: .1
+    factor: .5
+  model_settings:
+    n_classes: 2
+
+half-moons:
+  data_settings:
+    n_samples: 5000
+    noise: .1
+  model_settings:
+    n_classes: 2
+
+pin-wheel:
+  data_settings:
+    n_classes: 4
+    samples_per_class: 1250
+    radial_std: 0.3
+    tangential_std: 0.05
+    rate: 0.25
+  model_settings:
+    n_classes: 4
+
+burger:
+  data_settings:
+    n_samples: 5000
+    noise: 0.5
+  model_settings:
+    n_classes: 2
+
+training:
+  batch_size: 100
+  epochs: 15000
+  eval_every: 200
+  n_samples: 50
+  performance_key: "acc"
+
+pretrain:
+  batch_size: 100
+  epochs: 10000
+  eval_every: 200
+  n_samples: 50
+  performance_key: "iwae_elbo"
